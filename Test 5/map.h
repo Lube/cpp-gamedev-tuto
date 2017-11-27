@@ -6,16 +6,17 @@
 
 #define MAX_MAP_DEPTH 256
 #define MAX_MAP_WIDTH 256
-#define TILE_GRASS    0 
-#define TILE_WALL     1 
-#define TILE_WATER    2
-#define TILE_LAVA     3
+#define TILE_GRASS    ' ' 
+#define TILE_WALL     'T' 
+#define TILE_WATER    'W'
+#define TILE_LAVA     'M'
 
 struct SMap {
     int Width; 
     int Depth;    
     char FloorCells[MAX_MAP_DEPTH][MAX_MAP_WIDTH]; 
     char EnemyCells[MAX_MAP_DEPTH][MAX_MAP_WIDTH];
+    bool ShootCells[MAX_MAP_DEPTH][MAX_MAP_WIDTH];
 };
 
 void drawMap(SMap, SCharacter);  

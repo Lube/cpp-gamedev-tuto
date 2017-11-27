@@ -1,4 +1,5 @@
 #include "conio.h"
+#include "stdio.h"
 
 struct termios orig_termios;
 void resetTerminalMode()

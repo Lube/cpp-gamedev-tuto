@@ -1,4 +1,5 @@
 #include "conio.h"
+#include "stdio.h"
 
 struct termios orig_termios;
 void resetTerminalMode()
@@ -10,11 +11,9 @@ void setTerminalCONIOMode()
 {
     struct termios new_termios;
 
-    /* take two copies - one for now, one for later */
     tcgetattr(0, &orig_termios);
     memcpy(&new_termios, &orig_termios, sizeof(new_termios));
 
-    /* register cleanup handler, and set the new terminal mode */
     atexit(resetTerminalMode);
     cfmakeraw(&new_termios);
     tcsetattr(0, TCSANOW, &new_termios);
@@ -33,9 +32,29 @@ int getch()
 {
     int r;
     unsigned char c;
+    unsigned char c2;
+    unsigned char c3;
     if ((r = read(0, &c, sizeof(c))) < 0) {
         return r;
     } else {
+        if (c == 27) {
+            if (!kbhit()) {
+                return c;
+            } else {
+                if ((r = read(0, &c2, sizeof(c2))) < 0) {
+                    return r;
+                } else {
+                    if (c2 == 91) {
+                        if ((r = read(0, &c3, sizeof(c3))) < 0) {
+                            return r;
+                        } else {
+                            return c3;
+                        }
+                    }
+                }
+            }
+        }
+
         return c;
     }
 }
@@ -45,6 +64,6 @@ bool getAsyncKeyState(int some_char)
     while (!kbhit()) {
         return false;
     }
-   
+
     return getch() == some_char;
 }

@@ -6,10 +6,10 @@
 
 #define MAX_MAP_DEPTH 256
 #define MAX_MAP_WIDTH 256
-#define TILE_GRASS    0 
-#define TILE_WALL     1 
-#define TILE_WATER    2
-#define TILE_LAVA     3
+#define TILE_GRASS    ' ' 
+#define TILE_WALL     'T' 
+#define TILE_WATER    'W'
+#define TILE_LAVA     'X'
 
 struct SMap {
     int Width; 

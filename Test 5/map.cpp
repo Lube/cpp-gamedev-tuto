@@ -6,10 +6,12 @@ void drawMap(SMap activeMap, SCharacter Player) {
 
     for( int z=0; z< activeMap.Depth; z++ ) {
         for( int x=0; x< activeMap.Width; x++ ) { 
-            if( Player.x == x && Player.z == z )
+            if( Player.Position.x == x && Player.Position.z == z )
                 imageMap[nImageCursor++] = 'P'; 
             else if( activeMap.EnemyCells[z][x] != INVALID_ENEMY ) 
                 imageMap[nImageCursor++] = 'R';
+            else if( activeMap.ShootCells[z][x] )  
+                imageMap[nImageCursor++] = 'X';
             else
                 imageMap[nImageCursor++] = activeMap.FloorCells[z][x] ?  activeMap.FloorCells[z][x] : ' ';
         }

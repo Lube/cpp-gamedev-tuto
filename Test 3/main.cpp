@@ -2,67 +2,57 @@
 #include "conio.h"  
 #include "character.h"
 #include "map.h"
+#include "game.h"
+#include <vector>
 
-void setup( SMap* activeMap, SCharacter* player, SCharacter* enemy ) {   
+void setup( SGame* gameObject ) {   
     setTerminalCONIOMode();
-    initMap(activeMap, 15, 15);
+    initMap(&gameObject->Map, 15, 15);
+    setupEnemies(gameObject);
 
-    player->HP = 100; enemy->HP = 100;    
-    player->x = 5, player->z = 5;
-    enemy->x = 5, enemy->z = 10;
+    gameObject->Player.CurrentPoints.HP = 100;
+    gameObject->Player.x = 5;
+    gameObject->Player.z = 5;
 };  
 
-void update(SMap* activeMap, SCharacter* player, SCharacter* enemy) {
-    if( player->x < enemy->x )
-        enemy->x = enemy->x-1; 
-    else if( player->x > enemy->x )
-        enemy->x = enemy->x+1; 
+void update(SGame* gameObject, int lastKeyPress) {
+    for( int z = 0; z < gameObject->Map.Depth; z++ ) // clear each row
+       memset( gameObject->Map.EnemyCells[z], INVALID_ENEMY, sizeof(int)*gameObject->Map.Width );
 
-    if( player->z < enemy->z )
-        enemy->z = enemy->z-1; 
-    else if( player->z > enemy->z )
-        enemy->z = enemy->z+1;
-
-    if( player->z == enemy->z 
-        && player->x == enemy->x )
-    {
-        player->HP    -= 1; 
-        enemy->x = rand()%activeMap->Width, enemy->z = rand()%activeMap->Depth; 
-    } 
-};
-
-void draw(SMap activeMap, SCharacter player, SCharacter enemy) {
-    for( int z=0; z< activeMap.Depth; z++ ) {
-        for( int x=0; x< activeMap.Width; x++ ) {
-            if( player.x == x && player.z == z )
-                    printf( "%c", 'P' ); 
-            else if( enemy.x == x && enemy.z == z )
-                printf( "%c", 'E' ); 
-            else
-                printf( "%d", activeMap.FloorCells[z][x] );
-        }
-        printf( "\r\n" );
+    for( unsigned int iEnemy=0; iEnemy < gameObject->Enemy.size(); iEnemy++ ) {
+        SCharacter currentEnemy = gameObject->Enemy[iEnemy];
+        gameObject->Map.EnemyCells[currentEnemy.z][currentEnemy.x] = iEnemy;
     }
-};
 
+    updateEnemies(&gameObject->Enemy, &gameObject->Player);
+    updatePlayer(&gameObject->Player, lastKeyPress);
+};
+ 
+
+void draw(SGame gameObject) {
+    drawMap(gameObject.Map, gameObject.Player); 
+};
+ 
 int main( void )
 {
     SMap gameMap;
     SCharacter playerCharacter;
-    SCharacter enemyCharacter;
 
-    setup(&gameMap, &playerCharacter, &enemyCharacter);
+    SGame game = { gameMap, playerCharacter };
+
+    setup(&game);
     
     int frameCounter=0;
+    int lastKeyPress=0;
     
     while( true ) {        
-        printf("Current frame number: %i\r\n", frameCounter);    
+        printf("Current player hp: %d\r\n", game.Player.CurrentPoints.HP); 
+        lastKeyPress = getAsyncKeyState();   
 
-        update(&gameMap, &playerCharacter, &enemyCharacter);
-        draw(gameMap, playerCharacter, enemyCharacter);
-
-        if(getAsyncKeyState(27)) {
-            break;
+        update(&game, lastKeyPress);
+        draw(game);
+        if(lastKeyPress == 27) {
+            break; 
         }
 
         usleep(50000);

@@ -2,6 +2,7 @@
 #define CHARACTER_H
 
 #include "conio.h"
+#include "point.h"
 #include <stdlib.h>
 #include <vector>
 
@@ -9,7 +10,7 @@
 
 struct SCharacterLevelValues {
     int HP;
-    int MP;
+    int MP; 
     int XP;
 };
 
@@ -17,10 +18,12 @@ struct SCharacter
 {
     SCharacterLevelValues MaxPoints;
     SCharacterLevelValues CurrentPoints;
+    SVector2D PositionDeltas;
     int x, z;
+    float speed;
 }; 
 
-void updatePlayer (SCharacter*, int);
-void updateEnemies (std::vector<SCharacter>*, SCharacter*); 
+void updateEnemies (std::vector<SCharacter>*, SCharacter*, float); 
+void refreshPosFromDeltas (SCharacter*);
 
 #endif

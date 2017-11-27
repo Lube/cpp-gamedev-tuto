@@ -11,7 +11,7 @@
                 "-g", "*.cpp", "-o", "output"
             ],
             "options": {
-                "cwd": "${cwd}/Test 3"
+                "cwd": "${cwd}/Test 4"
             },
             "group": {
                 "kind": "build",
